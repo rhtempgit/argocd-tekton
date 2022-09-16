@@ -1,0 +1,8 @@
+resources:
+  - ../../base/pipelines-as-a-service/
+  - ../../base/openshift-pipelines/
+
+namespace: openshift-gitops
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization

@@ -1,0 +1,54 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: java-maven-
+  namespace: ploigos-quickstart
+spec:
+  pipelineRef:
+    name: java-maven
+  params:
+  - name: mvnArgs
+    value:
+      - "--no-transfer-progress"
+      - "-DskipITs"
+      - "-f"
+      - "getting-started/"
+      - "package"
+  - name: appRepoUrl
+    value: https://github.com/quarkusio/quarkus-quickstarts.git
+  - name: appImage
+    value: quarkus-quickstarts/getting-started:latest
+  - name: appRepoRef
+    value: main
+  - name: containerBuildContext
+    value: getting-started/
+  - name: containerfile
+    value: src/main/docker/Dockerfile.jvm
+  - name: verbose
+    value: 'true'
+  workspaces:
+  - name: app
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        volumeMode: Filesystem
+  - name: home
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        volumeMode: Filesystem
+  - name: maven-settings
+    emptyDir: { }
+    #secret:
+    #  secretName: maven-settings
+  - name: container-auth
+    secret:
+      secretName: container-auth

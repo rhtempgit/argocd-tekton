@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: java-maven-ci-
+  namespace: quickstart-app-java-maven-ci
+spec:
+  pipelineRef:
+    name: java-maven-ci
+  params:
+    - name: appRepoUrl
+      value: https://github.com/redhat-actions/spring-petclinic
+    - name: appImage
+      value: quickstart-app-java-maven/spring-petclinic:latest
+    - name: mvnArgs
+      value:
+        - "--no-transfer-progress"
+        - "package"
+    - name: containerfile
+      value: ./Dockerfile
+    - name: verbose
+      value: 'true'
+  workspaces:
+  - name: source
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        volumeMode: Filesystem
+  - name: maven-settings
+    emptyDir: { }
+  - name: container-auth
+    emptyDir: { }
